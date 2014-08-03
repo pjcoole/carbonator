@@ -21,7 +21,7 @@ then
 		echo 'Your scan results are attached to this email. Please visit https://www.integrissecurity.com/index.php?resources=Carbonator for more information.' | mutt -s 'Integris Security Carbonator Results' bcornell@integrissecurity.com -a IntegrisSecurity_Carbonator_$1_$2_$3.html && rm IntegrisSecurity_Carbonator_$1_$2_$3.html
 	else
 		echo Launching Scan against $1://$2:$3$4
-		java -jar -Xmx1024m ../burp_suite/burpsuite_pro_v1.6.02.jar $SCHEME $FQDN $PORT $FOLDER
+		java -jar -Xmx1024m  -Djava.awt.headless=true /pentest/burp/burpsuite_pro_v1.6beta.jar  $SCHEME $FQDN $PORT $FOLDER
 	fi
 else
 	echo Usage: $0 scheme fqdn port path email
