@@ -97,7 +97,7 @@ else:
 	if args.headless:
 		#global runHeadless
 		runHeadless=True	
-	elif args.file:
+	if args.file:
 	        if os.path.exists(args.file):
                 	try:
                        		with open(args.file) as f:
@@ -162,6 +162,7 @@ else:
 		sys.exit()
 
 	tmpHost = args.host
+	print tmpHost
     	if "http" in tmpHost or "https" in tmpHost:
 		parse_object = urlparse(tmpHost)
 		fqdn = str(parse_object.hostname)
