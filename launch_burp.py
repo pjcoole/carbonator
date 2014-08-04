@@ -3,11 +3,21 @@ import urllib2, socket,sys,base64,os
 from xml.dom.minidom import parse, parseString
 import socket
 from google import search
+from urlparse import urlparse
 
 #http://winappdbg.sourceforge.net/blog/google-1.06.tar.gz
 bingAPIKey = ''
 burpPath = '/pentest/burp/burpsuite_pro_v1.6beta.jar'
 runHeadless = False
+
+def isOpen(ip,port):
+	s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+    	try:
+     		s.connect((ip, int(port)))
+     		s.shutdown(2)
+     		return True
+    	except:
+     		return False
 
 def removeFile():
 	try:
@@ -19,6 +29,7 @@ def getIP(domain):
     return socket.gethostbyname(domain)
 
 def getGoogleResults(domain):
+    print "Google: "+str(domain)
     urls = []
     for url in search('site:'+domain, stop=50):
        urls.append(url)
@@ -29,6 +40,7 @@ def getGoogleResults(domain):
     return urls
 
 def reverseBing(ip):
+    print "Bing: "+str(ip)
     sites = []
     skip = 0
     top = 50
@@ -57,6 +69,12 @@ def reverseBing(ip):
     return sites	
 
 def runBurp(url):
+	print url
+	if "http" not in url and "https" not in url:
+		if isOpen(url,80):
+			url = "http://"+url
+		else:
+			url = "https://"+url
 	if runHeadless==True:
 		cmd = 'java -jar -Xmx1024m -Djava.awt.headless=true '+burpPath+' '+url
 	else:	
@@ -69,45 +87,91 @@ parser.add_argument('-host', help='Enter an IP address or Domain name')
 parser.add_argument('-saveState', action='store_true', help='Save Burpsuite State')
 parser.add_argument('-enableBing', action='store_true', help='Enable Bing Reverse IP')
 parser.add_argument('-enableGoogle', action='store_true', help='Enable Google Search')
+parser.add_argument('-file',  help='File containing Domain names or IP addresses')
 parser.add_argument('-headless', action='store_true', help='Run Burp headless')
 args = parser.parse_args()
-print args.host
-
-if args.headless:
-	global runHeadless
-	runHeadless=True
-
-if any(c.isalpha() for c in args.host)==False:
-	if args.enableBing==True:
-		if len(bingAPIKey)<1:
-			sys.exit("[!] Please check your bingAPIKey !")
-		sites = reverseBing(args.host)
-		for site in sites:
-			if args.saveState:
-				site+=' save'
-			if args.enableGoogle:
-				getGoogleResults(site)
-			else:
-				removeFile()
-			runBurp(site)
-	else:
-		site = args.host
-		if args.saveState:
-			site+=' save'
-		if args.enableGoogle:
-			getGoogleResults(site)
-		else:
-			removeFile()
-
-		runBurp(site)
-
+if args.host==None and args.file==None:
+	print "\n[!] Please run 'python2.7 launch_burp.py -h'\n"
+	sys.exit()
 else:
-	if args.enableBing==True:
-		ip = getIP(args.host)
-		sites = reverseBing(ip)
-		for site in sites:
-			ipSite = getIP(site)
-			if ip==ipSite:
+	if args.headless:
+		#global runHeadless
+		runHeadless=True	
+	elif args.file:
+	        if os.path.exists(args.file):
+                	try:
+                       		with open(args.file) as f:
+                       	        	 for line in f:
+                                        	host = line.strip("\n")
+						tmpHost = host
+                        			if "http" in host or "https" in tmpHost:
+							parse_object = urlparse(tmpHost)
+	        					fqdn = str(parse_object.hostname)
+							tmpHost = fqdn
+						if any(c.isalpha() for c in tmpHost)==False:
+							if args.enableBing==True:
+								if len(bingAPIKey)<1:
+									sys.exit("[!] Please check your bingAPIKey !")
+								sites = reverseBing(tmpHost)
+								for site in sites:
+									if args.saveState:
+										site+=' save'
+									if args.enableGoogle:
+										getGoogleResults(site)
+									else:
+										removeFile()
+									runBurp(site)
+							else:
+								site = tmpHost
+								if args.saveState:
+									site+=' save'
+								if args.enableGoogle:
+									getGoogleResults(site)
+								else:
+									removeFile()		
+
+								runBurp(host)
+
+						else:
+							if args.enableBing==True:
+								ip = getIP(tmpHost)
+								sites = reverseBing(ip)
+								for site in sites:
+									ipSite = getIP(site)
+									if ip==ipSite:
+										if args.saveState:
+											site+=' save'
+										if args.enableGoogle:
+											getGoogleResults(site)
+										else:
+											removeFile()
+										runBurp(site)
+							else:
+								site = host
+								if args.saveState:
+									site+=' save'
+								if args.enableGoogle:
+									getGoogleResults(site)
+								else:
+									removeFile()
+								runBurp(site)
+			except:
+				pass
+		else:
+			print "\n[!] Please check your input filename.\n"
+		sys.exit()
+
+	tmpHost = args.host
+    	if "http" in tmpHost or "https" in tmpHost:
+		parse_object = urlparse(tmpHost)
+		fqdn = str(parse_object.hostname)
+		tmpHost = fqdn
+	if any(c.isalpha() for c in tmpHost)==False:
+		if args.enableBing==True:
+			if len(bingAPIKey)<1:
+				sys.exit("[!] Please check your bingAPIKey !")
+			sites = reverseBing(tmpHost)
+			for site in sites:
 				if args.saveState:
 					site+=' save'
 				if args.enableGoogle:
@@ -115,14 +179,36 @@ else:
 				else:
 					removeFile()
 				runBurp(site)
-	else:
-		site = args.host
-		if args.saveState:
-			site+=' save'
-		if args.enableGoogle:
-			getGoogleResults(site)
 		else:
-			removeFile()
-		runBurp(site)
+			site = tmpHost
+			if args.saveState:
+				site+=' save'
+			if args.enableGoogle:
+				getGoogleResults(site)
+			else:
+				removeFile()		
+			runBurp(args.host)
 
-
+	else:
+		if args.enableBing==True:
+			ip = getIP(tmpHost)
+			sites = reverseBing(ip)
+			for site in sites:
+				ipSite = getIP(site)
+				if ip==ipSite:
+					if args.saveState:
+						site+=' save'
+					if args.enableGoogle:
+						getGoogleResults(site)
+					else:
+						removeFile()
+					runBurp(site)
+		else:
+			site = host
+			if args.saveState:
+				site+=' save'
+			if args.enableGoogle:
+				getGoogleResults(site)
+			else:
+				removeFile()
+			runBurp(site)
