@@ -205,7 +205,7 @@ else:
 						removeFile()
 					runBurp(site)
 		else:
-			site = host
+			site = tmpHost
 			if args.saveState:
 				site+=' save'
 			if args.enableGoogle:
