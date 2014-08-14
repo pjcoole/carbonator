@@ -7,7 +7,7 @@ from urlparse import urlparse
 
 #http://winappdbg.sourceforge.net/blog/google-1.06.tar.gz
 bingAPIKey = ''
-burpPath = '/pentest/burp/burpsuite_pro_v1.6beta.jar'
+burpPath = '/pentest/burp/burpsuite_pro_v1.6.03.jar'
 runHeadless = False
 
 def isOpen(ip,port):
@@ -59,7 +59,9 @@ def reverseBing(ip):
               domain = site.childNodes[0].nodeValue
               domain = domain.split("/")[2]
               if domain not in sites:
-                 sites.append(domain)
+		 siteIP = getIP(domain)
+		 if ip==siteIP:
+	                 sites.append(domain)
 
           skip += 50
 
