@@ -6,8 +6,9 @@ from google import search
 from urlparse import urlparse
 
 #http://winappdbg.sourceforge.net/blog/google-1.06.tar.gz
-bingAPIKey = ''
-burpPath = '/pentest/burp/burpsuite_pro_v1.6.03.jar'
+bingAPIKey = '40Mem6C6yp/FDmkBYaCtgEs7GdiNIGeod+n7T8ol2x0'
+#burpPath = '/pentest/burp/burpsuite_pro_v1.6beta.jar'
+burpPath = '/pentest/burp/burpsuite_pro_v1.6.04.jar'
 runHeadless = False
 
 def isOpen(ip,port):
@@ -29,7 +30,7 @@ def getIP(domain):
     return socket.gethostbyname(domain)
 
 def getGoogleResults(domain):
-    print "Google: "+str(domain)
+    print "Running Google Searches: "+str(domain)
     urls = []
     for url in search('site:'+domain, stop=50):
        urls.append(url)
@@ -39,8 +40,9 @@ def getGoogleResults(domain):
     f.close()
     return urls
 
-def reverseBing(ip):
-    print "Bing: "+str(ip)
+def reverseBing(ip): 
+    print "\n[*] Bing Reverse IP Lookup: "+str(ip) 
+    print "\n[*] Found the below domains: "
     sites = []
     skip = 0
     top = 50
@@ -58,11 +60,14 @@ def reverseBing(ip):
           for site in site_list:
               domain = site.childNodes[0].nodeValue
               domain = domain.split("/")[2]
-              if domain not in sites:
+	      tmpDomain = domain
+	      if ":" in domain:
+		 domain = domain.split(":")[0]
+              if tmpDomain not in sites:
 		 siteIP = getIP(domain)
 		 if ip==siteIP:
-	                 sites.append(domain)
-
+	                 sites.append(tmpDomain)
+	  	         print tmpDomain
           skip += 50
 
     print "Total domains found: %s \n" %(len(sites))
@@ -71,16 +76,16 @@ def reverseBing(ip):
     return sites	
 
 def runBurp(url):
-	print url
+	#print url
 	if "http" not in url and "https" not in url:
 		if isOpen(url,80):
 			url = "http://"+url
 		else:
 			url = "https://"+url
 	if runHeadless==True:
-		cmd = 'java -jar -Xmx1024m -Djava.awt.headless=true '+burpPath+' '+url
+		cmd = 'java -jar -Xmx2048m -Djava.awt.headless=true '+burpPath+' '+url
 	else:	
-		cmd = 'java -jar -Xmx1024m '+burpPath+' '+url
+		cmd = 'java -jar -Xmx2048m '+burpPath+' '+url
 	print cmd
 	os.system(cmd)
 
@@ -197,7 +202,14 @@ else:
 			ip = getIP(tmpHost)
 			sites = reverseBing(ip)
 			for site in sites:
-				ipSite = getIP(site)
+				print site
+                                tmpSite = site
+			        ipSite = site
+	                        if ":" in tmpSite:
+			                 site = site.split(":")[0]
+	  				 ipSite = getIP(site)
+			        else:
+					ipSite = getIP(tmpSite)
 				if ip==ipSite:
 					if args.saveState:
 						site+=' save'
@@ -205,7 +217,7 @@ else:
 						getGoogleResults(site)
 					else:
 						removeFile()
-					runBurp(site)
+					runBurp(tmpSite)
 		else:
 			site = tmpHost
 			if args.saveState:
