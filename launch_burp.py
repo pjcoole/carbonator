@@ -6,7 +6,7 @@ from google import search
 from urlparse import urlparse
 
 #http://winappdbg.sourceforge.net/blog/google-1.06.tar.gz
-bingAPIKey = '40Mem6C6yp/FDmkBYaCtgEs7GdiNIGeod+n7T8ol2x0'
+bingAPIKey = ''
 #burpPath = '/pentest/burp/burpsuite_pro_v1.6beta.jar'
 burpPath = '/pentest/burp/burpsuite_pro_v1.6.04.jar'
 runHeadless = False
