@@ -65,9 +65,11 @@ def reverseBing(ip):
 		 domain = domain.split(":")[0]
               if tmpDomain not in sites:
 		 siteIP = getIP(domain)
+	   	 if ip not in sites:
+	  		 sites.append(ip)
 		 if ip==siteIP:
-	                 sites.append(tmpDomain)
-	  	         print tmpDomain
+	                sites.append(tmpDomain)
+	  	        print tmpDomain
           skip += 50
 
     print "Total domains found: %s \n" %(len(sites))
