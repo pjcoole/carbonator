@@ -191,7 +191,7 @@ class BurpExtender(IBurpExtender, IHttpListener, IScannerListener):
 			self.port = int(443)
                 self.url = URL(self.scheme,self.fqdn,self.port,self.path)
 		global filename
-		filename = "burpstate_"+self.scheme+"_"+self.fqdn+"_"+str(self.port)+".html"
+		filename = "burpstate_"+self.scheme+"_"+self.fqdn+"_"+str(self.port)
                 return True
         elif cli[0] == 'https' or cli[0] == 'http': 
 		self.scheme = cli[0]
@@ -206,7 +206,7 @@ class BurpExtender(IBurpExtender, IHttpListener, IScannerListener):
                         return False
                 self.url = URL(self.scheme,self.fqdn,self.port,self.path)
 		global filename
-		filename = "burpstate_"+self.scheme+"_"+self.fqdn+"_"+str(self.port)+".html"
+		filename = "burpstate_"+self.scheme+"_"+self.fqdn+"_"+str(self.port)
         else:
                 print "Invalid command line arguments supplied"
                 return False
