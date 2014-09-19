@@ -7,7 +7,6 @@ from urlparse import urlparse
 
 #http://winappdbg.sourceforge.net/blog/google-1.06.tar.gz
 bingAPIKey = ''
-#burpPath = '/pentest/burp/burpsuite_pro_v1.6beta.jar'
 burpPath = '/pentest/burp/burpsuite_pro_v1.6.04.jar'
 runHeadless = False
 
@@ -30,9 +29,11 @@ def getIP(domain):
     return socket.gethostbyname(domain)
 
 def getGoogleResults(domain):
-    print "Running Google Searches: "+str(domain)
+    print "Running Google Searches: "+str(domain).replace("save","")
     urls = []
+    print "Found the below URLs in Google"
     for url in search('site:'+domain, stop=50):
+       print url	
        urls.append(url)
     f = open('links.txt', 'w')
     for item in urls:
