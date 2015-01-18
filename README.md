@@ -1,5 +1,5 @@
 #Credits to:  
-(1) Integris Security - For developing this awesome timesaver Burp script !!!
+(1) Integris Security - For developing this awesome time saving Burp script !!!
 
 ```  
 summarizeBurp.py  - Running this python script will summarize the findings from the 
