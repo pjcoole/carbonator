@@ -7,7 +7,7 @@ from urlparse import urlparse
 
 #http://winappdbg.sourceforge.net/blog/google-1.06.tar.gz
 bingAPIKey = ''
-burpPath = '/pentest/burp/burpsuite_pro_v1.6.04.jar'
+burpPath = '/../../burpsuite_pro_v1.6.10.jar'
 runHeadless = False
 
 def isOpen(ip,port):
@@ -33,7 +33,7 @@ def getGoogleResults(domain):
     urls = []
     print "Found the below URLs in Google"
     for url in search('site:'+domain, stop=50):
-       print url	
+       print url
        urls.append(url)
     f = open('links.txt', 'w')
     for item in urls:
@@ -41,8 +41,8 @@ def getGoogleResults(domain):
     f.close()
     return urls
 
-def reverseBing(ip): 
-    print "\n[*] Bing Reverse IP Lookup: "+str(ip) 
+def reverseBing(ip):
+    print "\n[*] Bing Reverse IP Lookup: "+str(ip)
     print "\n[*] Found the below domains: "
     sites = []
     skip = 0
@@ -76,7 +76,7 @@ def reverseBing(ip):
     print "Total domains found: %s \n" %(len(sites))
     for site in sites:
         print site
-    return sites	
+    return sites
 
 def runBurp(url):
 	#print url
@@ -87,7 +87,7 @@ def runBurp(url):
 			url = "https://"+url
 	if runHeadless==True:
 		cmd = 'java -jar -Xmx2048m -Djava.awt.headless=true '+burpPath+' '+url
-	else:	
+	else:
 		cmd = 'java -jar -Xmx2048m '+burpPath+' '+url
 	print cmd
 	os.system(cmd)
@@ -106,7 +106,7 @@ if args.host==None and args.file==None:
 else:
 	if args.headless:
 		#global runHeadless
-		runHeadless=True	
+		runHeadless=True
 	if args.file:
 	        if os.path.exists(args.file):
                 	try:
@@ -138,7 +138,7 @@ else:
 								if args.enableGoogle:
 									getGoogleResults(site)
 								else:
-									removeFile()		
+									removeFile()
 
 								runBurp(host)
 
@@ -197,7 +197,7 @@ else:
 			if args.enableGoogle:
 				getGoogleResults(site)
 			else:
-				removeFile()		
+				removeFile()
 			runBurp(args.host)
 
 	else:
